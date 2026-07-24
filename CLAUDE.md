@@ -25,3 +25,6 @@ submodule (its own repo: imbue-openhost/openhost-minds-template). Rules:
 - If the app test harness doesn't match the expected/real behavior of OpenHost,
   stop and flag it so the harness gets fixed — don't work around it.
 - If OpenHost itself misbehaves, also stop and flag it so we can fix it upstream.
+
+
+- please be relatively concise in your responses to the user when working in claude code or similar
