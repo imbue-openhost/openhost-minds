@@ -11,6 +11,8 @@ import json
 import subprocess
 import time
 
+import requests
+
 CHAT_AGENT_TIMEOUT = 180.0
 
 
@@ -59,8 +61,6 @@ def test_ui_served_through_router(stack):
 
 def test_ui_requires_auth(stack):
     """Without the owner session, the router must not serve the workspace."""
-    import requests
-
     resp = requests.get(f"{stack.url}/", timeout=30, allow_redirects=False)
     assert resp.status_code in (302, 401, 403), resp.status_code
 
@@ -126,7 +126,7 @@ def _agent_env_curl(container_name: str, url_expr: str, *extra: str) -> tuple[st
     returning (body, status_code) — exercising exactly what the latchkey
     skill tells agents to run."""
     cmd = (
-        'set -a; . /mngr/env; set +a; '
+        "set -a; . /mngr/env; set +a; "
         f'curl -sS -w "\\n%{{http_code}}" -H "Authorization: Bearer $OPENHOST_APP_TOKEN" {" ".join(extra)} "{url_expr}"'
     )
     result = _podman_exec(container_name, "bash", "-c", cmd)
@@ -146,9 +146,7 @@ def test_latchkey_services_reachable_from_agents(stack, container_name):
 def test_latchkey_ungranted_proxy_call_returns_grant_url(stack, container_name):
     """An ungranted third-party call comes back 403 permission_required with
     a grant_url — the plain-flow contract the latchkey skill relies on."""
-    body, status = _agent_env_curl(
-        container_name, "$LATCHKEY_GATEWAY/proxy/https://slack.com/api/conversations.list"
-    )
+    body, status = _agent_env_curl(container_name, "$LATCHKEY_GATEWAY/proxy/https://slack.com/api/conversations.list")
     assert status == "403", (status, body)
     payload = json.loads(body)
     assert payload["error"] == "permission_required", payload

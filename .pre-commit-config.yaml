@@ -1,0 +1,36 @@
+# Wrapper-repo checks only. The template submodule (its own repo) has its own
+# hooks; its files aren't tracked here, and the exclude below is belt-and-braces.
+exclude: ^openhost_minds_template/
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-merge-conflict
+      - id: check-added-large-files
+
+  - repo: local
+    hooks:
+      - id: ruff-check
+        name: "ruff auto-fix"
+        entry: uvx ruff check --fix --force-exclude
+        language: system
+        types: [python]
+      - id: ruff-format
+        name: "ruff format"
+        entry: uvx ruff format --force-exclude
+        language: system
+        types: [python]
+
+  - repo: https://github.com/shellcheck-py/shellcheck-py
+    rev: v0.10.0.1
+    hooks:
+      - id: shellcheck
+
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.24.2
+    hooks:
+      - id: gitleaks
