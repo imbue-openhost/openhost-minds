@@ -70,7 +70,10 @@ if [ -d "$tpl/.git" ]; then
     fi
     git -C "$tpl" rev-parse HEAD > "$version_out"
 else
-    echo "openhost_prepare_workspace: no template git history in build context; skipping version stamp (update-self staging will be inert)" >&2
+    # VERSION_OUT is always created so the Dockerfile can COPY it
+    # unconditionally; readers treat an empty stamp as unstamped.
+    : > "$version_out"
+    echo "openhost_prepare_workspace: no template git history in build context; leaving the version stamp empty (update-self staging will be inert)" >&2
 fi
 
 mkdir -p "$dest"
