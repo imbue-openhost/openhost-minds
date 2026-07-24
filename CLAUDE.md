@@ -16,3 +16,12 @@ submodule (its own repo: imbue-openhost/openhost-minds-template). Rules:
 - The Dockerfile mirrors the template's Dockerfile layer structure (paths
   prefixed with `openhost_minds_template/`). If the template's Dockerfile
   changes, mirror the change here.
+
+## Working in this repo
+
+- Follow `style_guide.md` for the wrapper's own Python (`scripts/`, `tests/`).
+- `just check` runs the pre-commit hooks (ruff, shellcheck, gitleaks); `just
+  setup` installs them. These cover only the wrapper — never the submodule.
+- If the app test harness doesn't match the expected/real behavior of OpenHost,
+  stop and flag it so the harness gets fixed — don't work around it.
+- If OpenHost itself misbehaves, also stop and flag it so we can fix it upstream.

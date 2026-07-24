@@ -1,0 +1,23 @@
+# Applies to this wrapper repo's own Python (scripts/, tests/) only.
+# The template submodule has its own ruff config and is excluded.
+line-length = 119
+exclude = ["openhost_minds_template"]
+
+[lint]
+select = [
+    "E",       # pycodestyle errors
+    "F",       # pyflakes
+    "B",       # flake8-bugbear
+    "UP",      # pyupgrade (modern Python syntax)
+    "I",       # isort
+    "PLC0415", # import-outside-top-level
+]
+ignore = ["E501"]  # line length handled by formatter
+
+[format]
+quote-style = "double"
+indent-style = "space"
+
+[lint.isort]
+force-single-line = true
+case-sensitive = true

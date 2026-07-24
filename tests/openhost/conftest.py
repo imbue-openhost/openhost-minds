@@ -1,9 +1,9 @@
 import shutil
 import subprocess
-import tomllib
 from pathlib import Path
 
 import pytest
+import tomllib
 from openhost_test_harness import OpenhostStack
 
 # First boot builds the image (slow when the podman layer cache is cold),

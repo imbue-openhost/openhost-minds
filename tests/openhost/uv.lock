@@ -891,6 +891,7 @@ dev = [
     { name = "httpx" },
     { name = "openhost", extra = ["test-harness"] },
     { name = "pytest" },
+    { name = "requests" },
 ]
 
 [package.metadata]
@@ -900,6 +901,7 @@ dev = [
     { name = "httpx", specifier = ">=0.27" },
     { name = "openhost", extras = ["test-harness"], git = "https://github.com/imbue-openhost/openhost?rev=main" },
     { name = "pytest", specifier = ">=8.0" },
+    { name = "requests", specifier = ">=2.31" },
 ]
 
 [[package]]

@@ -11,15 +11,25 @@ binds the port (see supervisord.conf).
 
 import os
 import sys
-from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from http.server import BaseHTTPRequestHandler
+from http.server import ThreadingHTTPServer
 
 PID_FILE = "/var/run/openhost-boot-placeholder.pid"
 
+# Set on every placeholder response so the page below can tell "still the
+# placeholder" from "system_interface has taken over".
+MARKER_HEADER = "X-Openhost-Boot-Placeholder"
+
+# The page polls rather than using <meta http-equiv="refresh">: nothing listens
+# on the port between this server exiting and system_interface binding it
+# (forward_port.py, then a Flask app that starts `mngr observe` before it
+# listens -- seconds, not milliseconds), and a navigation that lands in that
+# window gets the router's bare 502, which never retries. Polling keeps the
+# browser on this page and reloads only once the real UI answers.
 PAGE = b"""<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <meta http-equiv="refresh" content="3">
     <title>Starting...</title>
     <style>
       body { font-family: system-ui, sans-serif; display: flex; align-items: center;
@@ -28,21 +38,42 @@ PAGE = b"""<!doctype html>
     </style>
   </head>
   <body><div><h1>Your mind is starting&hellip;</h1>
-  <p>First boot can take a couple of minutes. This page refreshes automatically.</p>
-  </div></body>
+  <p>First boot can take a couple of minutes. This page loads automatically when it is ready.</p>
+  </div>
+  <script>
+    const MARKER = "x-openhost-boot-placeholder";
+    async function poll() {
+      try {
+        const response = await fetch(location.href, { cache: "no-store" });
+        if (response.ok && !response.headers.has(MARKER)) {
+          location.reload();
+          return;
+        }
+      } catch (e) {
+        // Port is mid-handover; fall through and retry.
+      }
+      setTimeout(poll, 1000);
+    }
+    setTimeout(poll, 1000);
+  </script>
+  </body>
 </html>
 """
 
 
 class Handler(BaseHTTPRequestHandler):
-    def do_GET(self) -> None:
+    def do_HEAD(self) -> None:
         self.send_response(200)
         self.send_header("Content-Type", "text/html; charset=utf-8")
         self.send_header("Content-Length", str(len(PAGE)))
+        self.send_header(MARKER_HEADER, "1")
+        # Without this the post-handover reload can be served this page from cache.
+        self.send_header("Cache-Control", "no-store")
         self.end_headers()
-        self.wfile.write(PAGE)
 
-    do_HEAD = do_GET
+    def do_GET(self) -> None:
+        self.do_HEAD()
+        self.wfile.write(PAGE)
 
     def log_message(self, format: str, *args: object) -> None:
         pass

@@ -54,12 +54,12 @@ if [ -d "$tpl/.git" ]; then
     if [ -n "$gitlink" ] && [ "$gitlink" != "$head_sha" ]; then
         echo "openhost_prepare_workspace: template worktree at $head_sha but app repo records $gitlink; checking out recorded commit" >&2
         if ! git -C "$tpl" checkout -qf "$gitlink" 2>/dev/null; then
-            git -C "$tpl" fetch origin "$gitlink" && git -C "$tpl" checkout -qf "$gitlink" || {
+            if ! { git -C "$tpl" fetch origin "$gitlink" && git -C "$tpl" checkout -qf "$gitlink"; }; then
                 echo "openhost_prepare_workspace: could not check out $gitlink; the submodule" >&2
                 echo "commit is not available locally or from origin. Push the template commit" >&2
                 echo "and redeploy, or update the submodule worktree in the build checkout." >&2
                 exit 1
-            }
+            fi
         fi
     fi
     # OpenHost clones submodules with --shallow-submodules; without full history
