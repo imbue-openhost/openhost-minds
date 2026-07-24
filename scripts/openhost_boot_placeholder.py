@@ -62,7 +62,7 @@ PAGE = b"""<!doctype html>
 
 
 class Handler(BaseHTTPRequestHandler):
-    def do_GET(self) -> None:
+    def do_HEAD(self) -> None:
         self.send_response(200)
         self.send_header("Content-Type", "text/html; charset=utf-8")
         self.send_header("Content-Length", str(len(PAGE)))
@@ -70,9 +70,10 @@ class Handler(BaseHTTPRequestHandler):
         # Without this the post-handover reload can be served this page from cache.
         self.send_header("Cache-Control", "no-store")
         self.end_headers()
-        self.wfile.write(PAGE)
 
-    do_HEAD = do_GET
+    def do_GET(self) -> None:
+        self.do_HEAD()
+        self.wfile.write(PAGE)
 
     def log_message(self, format: str, *args: object) -> None:
         pass
