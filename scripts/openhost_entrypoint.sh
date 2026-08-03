@@ -94,7 +94,6 @@ set_host_env OPENHOST_TEMPLATE_INCOMING_REF refs/openhost/incoming
 # those vars must be written here. Keep in sync with settings.toml.
 set_host_env IS_SANDBOX 1
 set_host_env IS_AUTONOMOUS 1
-set_host_env CLAUDE_CODE_ENABLE_OPUS_4_7_FAST_MODE 1
 set_host_env CLAUDE_CODE_SKIP_FAST_MODE_ORG_CHECK 1
 set_host_env DISABLE_AUTOUPDATER 1
 set_host_env CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC 1
